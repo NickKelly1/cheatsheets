@@ -1,5 +1,28 @@
 # Linux Bridge VLAN Cheatsheet
 
+## Table of Contents
+
+- [Mental model](#mental-model)
+- [Check whether VLAN filtering is active](#check-whether-vlan-filtering-is-active)
+- [Read `bridge vlan show`](#read-bridge-vlan-show)
+- [Access port example](#access-port-example)
+- [Trunk port example](#trunk-port-example)
+- [Access-to-trunk forwarding](#access-to-trunk-forwarding)
+- [The bridge-local or CPU port](#the-bridge-local-or-cpu-port)
+- [`self` versus `master`](#self-versus-master)
+- [Inspect configuration](#inspect-configuration)
+- [Configure an access port cleanly](#configure-an-access-port-cleanly)
+- [Configure a trunk cleanly](#configure-a-trunk-cleanly)
+- [Hybrid or native-VLAN trunk](#hybrid-or-native-vlan-trunk)
+- [Understanding `tcpdump`](#understanding-tcpdump)
+- [VLAN hardware offloading](#vlan-hardware-offloading)
+- [Troubleshooting checklist](#troubleshooting-checklist)
+- [Common mistakes](#common-mistakes)
+- [Quick reference](#quick-reference)
+- [Minimal working example](#minimal-working-example)
+
+---
+
 ## Mental model
 
 A VLAN-aware Linux bridge behaves like a managed Ethernet switch.
@@ -665,4 +688,3 @@ cat /sys/class/net/br0/bridge/vlan_filtering
 bridge vlan show
 sudo tcpdump -i enp1s0 -enn
 ```
-

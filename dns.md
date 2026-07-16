@@ -1,5 +1,29 @@
 # DNS Cheatsheet
 
+## Table of Contents
+
+- [DNS Resolution](#dns-resolution)
+- [Common Record Types](#common-record-types)
+- [`dig`](#dig)
+- [Other Query Tools](#other-query-tools)
+- [Reading a `dig` Response](#reading-a-dig-response)
+- [Zone File Example](#zone-file-example)
+- [Validate BIND Configuration](#validate-bind-configuration)
+- [Local Resolver Configuration](#local-resolver-configuration)
+- [Cache and TTL](#cache-and-ttl)
+- [Delegation Checks](#delegation-checks)
+- [DNSSEC Checks](#dnssec-checks)
+- [Reverse DNS](#reverse-dns-1)
+- [Email DNS](#email-dns)
+- [Split-Horizon DNS](#split-horizon-dns)
+- [Troubleshooting Workflow](#troubleshooting-workflow)
+- [Packet Capture](#packet-capture)
+- [Useful One-Liners](#useful-one-liners)
+- [Common Problems](#common-problems)
+- [Avoid These Mistakes](#avoid-these-mistakes)
+
+---
+
 ## DNS Resolution
 
 ```text
@@ -673,4 +697,3 @@ dig +short example.com NS | sort
 * Do not assume a successful `ping` proves DNS is correct.
 * Do not rely on only one recursive resolver when troubleshooting.
 * Do not confuse `NXDOMAIN` with an existing name that lacks the requested record type.
-

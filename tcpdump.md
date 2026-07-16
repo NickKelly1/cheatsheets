@@ -1,5 +1,29 @@
 # tcpdump Cheatsheet
 
+## Table of Contents
+
+- [Command Structure](#command-structure)
+- [Interfaces](#interfaces)
+- [Common Options](#common-options)
+- [Host Filters](#host-filters)
+- [Network Filters](#network-filters)
+- [Port Filters](#port-filters)
+- [Protocol Filters](#protocol-filters)
+- [Combining Filters](#combining-filters)
+- [TCP Flags](#tcp-flags)
+- [Packet Size](#packet-size)
+- [Ethernet Filters](#ethernet-filters)
+- [VLAN Traffic](#vlan-traffic)
+- [Common Protocol Recipes](#common-protocol-recipes)
+- [Capture Files](#capture-files)
+- [Capture Rotation](#capture-rotation)
+- [Remote Capture](#remote-capture)
+- [Pipe-Friendly Output](#pipe-friendly-output)
+- [Useful Diagnostic Commands](#useful-diagnostic-commands)
+- [Common Gotchas](#common-gotchas)
+
+---
+
 ## Command Structure
 
 ```bash
@@ -492,4 +516,3 @@ sudo tcpdump -i any -nn \
 * Filters are applied before packets reach userspace and are more efficient than piping through `grep`.
 * tcpdump cannot reliably identify TCP retransmissions using a capture filter alone. Analyze the PCAP with Wireshark or tshark.
 * Avoid capturing secrets from unencrypted protocols on shared systems.
-
