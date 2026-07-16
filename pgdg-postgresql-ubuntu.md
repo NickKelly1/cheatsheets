@@ -5,6 +5,29 @@ units, and Debian/Ubuntu cluster tooling.
 
 Last checked: 2026-07-16. Examples use PostgreSQL 18.
 
+## Table of Contents
+
+- [Variables](#variables)
+- [Install PGDG and PostgreSQL](#install-pgdg-and-postgresql)
+- [Verify](#verify)
+- [Filesystem layout](#filesystem-layout)
+- [Cluster and systemd management](#cluster-and-systemd-management)
+- [Logs](#logs)
+- [Connect with `psql`](#connect-with-psql)
+- [Create an application role and database](#create-an-application-role-and-database)
+- [Configuration](#configuration)
+- [Remote access](#remote-access)
+- [Multiple clusters](#multiple-clusters)
+- [Extensions](#extensions)
+- [Backups](#backups)
+- [Minor updates](#minor-updates)
+- [Major upgrade](#major-upgrade)
+- [Troubleshooting](#troubleshooting)
+- [Destructive-command check](#destructive-command-check)
+- [References](#references)
+
+---
+
 ## Variables
 
 ```bash
