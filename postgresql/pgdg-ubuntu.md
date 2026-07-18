@@ -7,6 +7,7 @@ Last checked: 2026-07-16. Examples use PostgreSQL 18.
 
 ## Table of Contents
 
+- [Practical exercise](#practical-exercise)
 - [Variables](#variables)
 - [Install PGDG and PostgreSQL](#install-pgdg-and-postgresql)
 - [Verify](#verify)
@@ -25,6 +26,41 @@ Last checked: 2026-07-16. Examples use PostgreSQL 18.
 - [Troubleshooting](#troubleshooting)
 - [Destructive-command check](#destructive-command-check)
 - [References](#references)
+
+---
+
+## Practical exercise
+
+Before installing or upgrading anything, inspect what Ubuntu and APT currently
+know. These commands do not change packages:
+
+```bash
+export PG_MAJOR='18'
+. /etc/os-release
+
+printf 'Ubuntu codename: %s\n' "$VERSION_CODENAME"
+apt-cache policy "postgresql-${PG_MAJOR}" "postgresql-client-${PG_MAJOR}"
+command -v psql >/dev/null && psql --version
+command -v pg_lsclusters >/dev/null && pg_lsclusters --start-conf
+```
+
+```text
+PGDG APT source ──► versioned server/client packages ──► cluster `18/main`
+                                                                  ├── systemd instance
+                                                                  ├── data + config
+                                                                  └── log
+```
+
+| Output | Interpretation |
+| --- | --- |
+| `Candidate: (none)` | APT does not currently offer that major version. |
+| Candidate from `apt.postgresql.org` | The PGDG source is visible to APT. |
+| `psql (PostgreSQL) 18...` | The client executable resolves to that major version. |
+| A row from `pg_lsclusters` | A Debian/Ubuntu cluster already exists; note its port and status. |
+
+Keep the observed codename, candidate version, and cluster row beside you while
+following the install steps. They connect the package layer to the running
+server layer and make version mismatches easier to spot.
 
 ---
 

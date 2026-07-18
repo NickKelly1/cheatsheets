@@ -11,6 +11,7 @@ a scan.
 
 ## Table of Contents
 
+- [Practical exercise](#practical-exercise)
 - [Safety and scope](#safety-and-scope)
 - [Install and verify](#install-and-verify)
 - [Example variables](#example-variables)
@@ -36,6 +37,41 @@ a scan.
 - [Troubleshooting](#troubleshooting)
 - [Quick reference](#quick-reference)
 - [References](#references)
+
+---
+
+## Practical exercise
+
+This lab stays on your own loopback interface. In terminal A, start a temporary
+web server:
+
+```bash
+python3 -m http.server 8000 --bind 127.0.0.1
+```
+
+In terminal B, scan the open port and its closed neighbors:
+
+```bash
+nmap -n -sT -p 7999-8001 127.0.0.1
+nmap -n -sT -sV --version-light -p 8000 127.0.0.1
+```
+
+Stop the web server with `Ctrl-C` and run the first scan again.
+
+```text
+terminal B / Nmap ── TCP connect ──► 127.0.0.1:7999  closed
+                                  ├─► 127.0.0.1:8000  open ──► terminal A / Python
+                                  └─► 127.0.0.1:8001  closed
+```
+
+| Change | Expected observation |
+| --- | --- |
+| Start the server | Port `8000` changes to `open`. |
+| Add `-sV` | Nmap sends probes and attempts to name the service. |
+| Stop the server | Port `8000` returns to `closed`. |
+
+You have now exercised target selection, port selection, state detection, and
+lightweight version detection without touching another machine.
 
 ---
 

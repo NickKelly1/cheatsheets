@@ -2,6 +2,7 @@
 
 ## Table of Contents
 
+- [Practical exercise](#practical-exercise)
 - [Command Structure](#command-structure)
 - [Interfaces](#interfaces)
 - [Common Options](#common-options)
@@ -21,6 +22,38 @@
 - [Pipe-Friendly Output](#pipe-friendly-output)
 - [Useful Diagnostic Commands](#useful-diagnostic-commands)
 - [Common Gotchas](#common-gotchas)
+
+---
+
+## Practical exercise
+
+Use two terminals. In terminal A, capture exactly three ICMP request/reply
+pairs on the loopback interface:
+
+```bash
+sudo tcpdump -ni lo -c 6 icmp
+```
+
+In terminal B, generate them:
+
+```bash
+ping -c 3 127.0.0.1
+```
+
+```text
+terminal B / ping ── echo request ──► loopback ──► ICMP responder
+terminal A / tcpdump ◄── observes ────┴─────────── echo reply ◄──┘
+```
+
+| Experiment | What changes |
+| --- | --- |
+| Remove `-n` | tcpdump may resolve addresses into names. |
+| Add `-vv` | More protocol fields appear. |
+| Replace `icmp` with `port 5432` | The capture keeps only PostgreSQL traffic. |
+
+Read one output line from left to right: timestamp → source → destination →
+protocol detail. This is the basic movement repeated throughout the filters
+below: generate known traffic, capture narrowly, then widen only if needed.
 
 ---
 

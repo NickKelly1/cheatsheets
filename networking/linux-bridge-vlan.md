@@ -2,6 +2,7 @@
 
 ## Table of Contents
 
+- [Practical exercise](#practical-exercise)
 - [Mental model](#mental-model)
 - [Check whether VLAN filtering is active](#check-whether-vlan-filtering-is-active)
 - [Read `bridge vlan show`](#read-bridge-vlan-show)
@@ -20,6 +21,43 @@
 - [Common mistakes](#common-mistakes)
 - [Quick reference](#quick-reference)
 - [Minimal working example](#minimal-working-example)
+
+---
+
+## Practical exercise
+
+Start with a read-only inventory. Replace `br0` with a bridge reported by the
+first two commands:
+
+```bash
+ip -brief link
+ip -details link show type bridge
+
+BR='br0'
+bridge link show master "$BR"
+bridge vlan show
+bridge fdb show br "$BR" | head -n 20
+```
+
+Now choose one bridge port from the output and trace an untagged ingress frame:
+
+```text
+access host ── untagged frame ──► access port ── PVID 10 ──► br0 FDB lookup
+                                                                       │
+                         another VLAN 10 access port ◄── untagged ─────┤
+                                  VLAN 10 trunk port ◄── tagged 10 ────┘
+```
+
+| Output clue | Physical behavior to picture |
+| --- | --- |
+| `PVID` | An untagged ingress frame is assigned to this VLAN. |
+| `Egress Untagged` | The tag is removed before the frame leaves that port. |
+| A VLAN listed without flags | Membership exists; egress is normally tagged. |
+| A learned MAC in the FDB | The bridge has learned which port reaches that source. |
+
+If no bridge exists, keep reading through the minimal namespace example near
+the end before changing a production host. VLAN changes can cut off your own
+management connection, so make them from a console or disposable lab first.
 
 ---
 

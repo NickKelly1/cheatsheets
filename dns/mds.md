@@ -2,6 +2,7 @@
 
 ## Table of Contents
 
+- [Practical exercise](#practical-exercise)
 - [Quick Reference](#quick-reference)
 - [Mental Model](#mental-model)
 - [mDNS and DNS-SD](#mdns-and-dns-sd)
@@ -20,6 +21,43 @@
 - [Security Notes](#security-notes)
 - [Avoid These Mistakes](#avoid-these-mistakes)
 - [References](#references)
+
+---
+
+## Practical exercise
+
+Use two terminals on a Linux host. In terminal A, watch mDNS traffic:
+
+```bash
+sudo tcpdump -ni any -vv 'udp port 5353'
+```
+
+In terminal B, resolve your own advertised name or replace it with a known
+device such as `printer.local`:
+
+```bash
+TARGET="$(hostname -s).local"
+printf 'Looking for %s\n' "$TARGET"
+avahi-resolve-host-name "$TARGET"
+getent hosts "$TARGET"
+```
+
+Stop the capture with `Ctrl-C` after the response appears.
+
+```text
+terminal B                    local link                         device owning the name
+resolver ── query ──► 224.0.0.251:5353 / [FF02::FB]:5353 ◄── A or AAAA response
+terminal A ───────────────────────── observes both directions ───────────────────────
+```
+
+| Look for | Meaning |
+| --- | --- |
+| Destination port `5353` | This is mDNS, not a query to a conventional DNS server. |
+| `A` or `AAAA` answer | The owner is mapping its `.local.` name to an address. |
+| No answer | Try a known `.local` device, then check Avahi and multicast reachability. |
+
+This exercise changes no network configuration. It lets you feel the key mDNS
+idea first: every participant asks and answers directly on the local link.
 
 ---
 
@@ -89,7 +127,7 @@ Office Printer._ipp._tcp.local.
   → printer.local.:631
 ```
 
-DNS-SD commonly uses mDNS for zero-configuration discovery, but DNS-SD can also use conventional unicast DNS. See [dns-sd.md](dns-sd.md) for service discovery.
+DNS-SD commonly uses mDNS for zero-configuration discovery, but DNS-SD can also use conventional unicast DNS. See [sd.md](sd.md) for service discovery.
 
 ---
 
@@ -237,6 +275,9 @@ sudo systemctl restart avahi-daemon
 
 ### NSS Integration
 
+See [linux.md](linux.md) for the complete Linux NSS resolution path and for
+diagnosing differences between `getent`, `resolvectl`, and `dig`.
+
 A common `nss-mdns` configuration looks like:
 
 ```text
@@ -338,7 +379,7 @@ dscacheutil -q host -a name printer.local
 
 `dns-sd` operations are normally continuous. Stop them with `Ctrl-C` after observing the result.
 
-For service browsing and registration with `dns-sd`, see [dns-sd.md](dns-sd.md).
+For service browsing and registration with `dns-sd`, see [sd.md](sd.md).
 
 ---
 

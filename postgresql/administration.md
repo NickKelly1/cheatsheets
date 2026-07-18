@@ -2,16 +2,11 @@
 
 Ubuntu + PGDG + `postgresql-common` + systemd.
 
-Examples use PostgreSQL 18 and cluster `main`. Replace these as needed:
-
-```bash
-export PGVER='18'
-export PGCLUSTER='main'
-export PGUNIT="postgresql@${PGVER}-${PGCLUSTER}.service"
-```
+Examples use PostgreSQL 18 and cluster `main`. Replace these as needed.
 
 ## Table of Contents
 
+- [Practical exercise](#practical-exercise)
 - [Mental model](#mental-model)
 - [Inspect the installation](#inspect-the-installation)
 - [Create a cluster](#create-a-cluster)
@@ -37,6 +32,44 @@ export PGUNIT="postgresql@${PGVER}-${PGCLUSTER}.service"
 - [Major-version upgrades](#major-version-upgrades)
 - [Useful emergency commands](#useful-emergency-commands)
 - [Recommended defaults](#recommended-defaults)
+
+---
+
+## Practical exercise
+
+Set the example identifiers, then inspect the system without changing it:
+
+```bash
+export PGVER='18'
+export PGCLUSTER='main'
+export PGUNIT="postgresql@${PGVER}-${PGCLUSTER}.service"
+
+pg_lsclusters --start-conf
+sudo systemctl --no-pager --full status "$PGUNIT"
+sudo -u postgres psql -X --dbname=postgres --command \
+  "SELECT current_database() AS database,
+          current_user AS role,
+          current_setting('server_version') AS version;"
+sudo -u postgres psql -X --dbname=postgres --tuples-only --command \
+  "SHOW data_directory; SHOW config_file; SHOW hba_file;"
+```
+
+```text
+systemd unit `postgresql@18-main` ──► server process ──► cluster `18/main`
+                                                               ├── roles
+psql ── Unix socket / TCP ──────────────────────────────────────┼── database `postgres`
+                                                               └── data + config + HBA paths
+```
+
+| Check | What you physically locate |
+| --- | --- |
+| `pg_lsclusters` | Version, cluster name, port, status, owner, data directory, and log. |
+| `systemctl status` | The concrete instance process, recent log lines, and unit state. |
+| SQL identity query | The database and role your session actually reached. |
+| `SHOW` paths | The files this running server really uses, avoiding guessed paths. |
+
+If the cluster is absent or offline, stop here and use the creation or service
+sections below. The commands in this exercise are read-only.
 
 ---
 

@@ -2,6 +2,7 @@
 
 ## Table of Contents
 
+- [Practical exercise](#practical-exercise)
 - [Quick Reference](#quick-reference)
 - [Mental Model](#mental-model)
 - [DNS-SD and mDNS](#dns-sd-and-mdns)
@@ -25,6 +26,43 @@
 - [Security and Privacy](#security-and-privacy)
 - [Avoid These Mistakes](#avoid-these-mistakes)
 - [References](#references)
+
+---
+
+## Practical exercise
+
+On Linux with Avahi, ask the local link which services are being advertised:
+
+```bash
+avahi-browse --all --terminate
+avahi-browse --resolve --terminate _ssh._tcp
+```
+
+Run this in a second terminal if you want to watch the discovery packets:
+
+```bash
+sudo tcpdump -ni any -vv 'udp port 5353'
+```
+
+On macOS, the equivalent browse is interactive; stop it with `Ctrl-C`:
+
+```bash
+dns-sd -B _ssh._tcp local.
+```
+
+```text
+browse `_ssh._tcp` ──PTR──► named instances ──SRV + TXT──► host:port + metadata
+                                                        └──A / AAAA──► address
+```
+
+| In the output | Read it as |
+| --- | --- |
+| `+` | A service instance appeared. |
+| `-` | A service instance disappeared. |
+| `=` | Avahi resolved the instance into host, port, and TXT data. |
+
+Try `_http._tcp`, `_ipp._tcp`, or another type from the common-service table.
+An empty result can simply mean that nobody on this link publishes that type.
 
 ---
 
@@ -114,7 +152,7 @@ Where is the selected instance listening?
 Which metadata does it advertise?
 ```
 
-See [mdns.md](mdns.md) for multicast transport, `.local.`, packet fields, and host-name resolution.
+See [mds.md](mds.md) for multicast transport, `.local.`, packet fields, and host-name resolution.
 
 ---
 

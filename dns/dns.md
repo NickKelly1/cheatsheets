@@ -2,6 +2,7 @@
 
 ## Table of Contents
 
+- [Practical exercise](#practical-exercise)
 - [DNS Resolution](#dns-resolution)
 - [Common Record Types](#common-record-types)
 - [`dig`](#dig)
@@ -21,6 +22,35 @@
 - [Useful One-Liners](#useful-one-liners)
 - [Common Problems](#common-problems)
 - [Avoid These Mistakes](#avoid-these-mistakes)
+
+---
+
+## Practical exercise
+
+Run these read-only queries and compare what each view adds:
+
+```bash
+NAME='example.com'
+
+dig "$NAME" A +short
+dig "$NAME" A +noall +answer +stats
+dig "$NAME" NS +short
+dig +trace "$NAME" A
+```
+
+```text
+you (`dig`) ──► recursive resolver ──► root ──► .com ──► authoritative server
+             ◄──────────── cached or final A record, TTL, and response status ────
+```
+
+| Do | Notice |
+| --- | --- |
+| Repeat the `+noall +answer +stats` query | The answer should stay stable while query time may fall after caching. |
+| Compare `A`, `NS`, and `MX` | One name can expose different record sets with different jobs. |
+| Read the last lines of `+trace` | Delegation walks from the root to the authoritative server. |
+
+Change `NAME` to a domain you operate and repeat the exercise. Querying is safe;
+do not treat an answer from one resolver as proof that every resolver sees it yet.
 
 ---
 
@@ -336,6 +366,10 @@ sudo journalctl -u bind9
 
 ## Local Resolver Configuration
 
+For the full application-to-network path on Debian and Ubuntu—including NSS,
+`getent`, systemd-resolved, NetworkManager, Netplan, Avahi, and libvirt—see
+[linux.md](linux.md).
+
 ### Files
 
 ```text
@@ -381,6 +415,9 @@ options edns0 trust-ad
 ---
 
 ## Cache and TTL
+
+For native Unbound, AdGuard Home, and Pi-hole cache and deployment examples,
+see [resolvers.md](resolvers.md).
 
 ```text
 TTL = how long a resolver may cache an answer
@@ -429,6 +466,9 @@ A delegation is lame when the parent delegates to a server that is not authorita
 ---
 
 ## DNSSEC Checks
+
+For validation states, record-chain debugging, and the distinction between
+DNSSEC and DoT, DoH, DoQ, or ODoH, see [security.md](security.md).
 
 ```bash
 dig example.com A +dnssec

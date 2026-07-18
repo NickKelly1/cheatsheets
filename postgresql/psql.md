@@ -8,6 +8,7 @@ support every option shown here.
 
 ## Table of Contents
 
+- [Practical exercise](#practical-exercise)
 - [Quick start](#quick-start)
 - [Command-line options](#command-line-options)
 - [Connection defaults](#connection-defaults)
@@ -39,6 +40,51 @@ support every option shown here.
 - [Troubleshooting](#troubleshooting)
 - [Quick reference](#quick-reference)
 - [References](#references)
+
+---
+
+## Practical exercise
+
+Choose a database you can access, then open a session without loading personal
+startup settings:
+
+```bash
+export PGDATABASE="${PGDATABASE:-postgres}"
+psql --no-psqlrc --dbname="$PGDATABASE"
+```
+
+Type these lines inside `psql` one at a time:
+
+```text
+\conninfo
+SELECT current_database(), current_user, now();
+\dt
+\q
+```
+
+Run the same identity check directly from the shell:
+
+```bash
+psql -X --dbname="$PGDATABASE" --command \
+  'SELECT current_database(), current_user, now();'
+```
+
+```text
+shell options + environment ──► psql client ── SQL ──► PostgreSQL server
+                                      │                  │
+                                      └─ `\` commands    └─ rows + status
+                                         run locally ◄───────────────┘
+```
+
+| Action | Feel the boundary |
+| --- | --- |
+| `\conninfo` or `\dt` | `psql` recognizes the backslash command locally. |
+| `SELECT ...;` | The semicolon completes SQL that is sent to the server. |
+| `\q` | The client exits; it does not stop PostgreSQL. |
+| `--command` | The shell starts `psql`, runs one unit of work, and gets an exit status. |
+
+Everything above is read-only. If connection fails, keep the exact error and
+jump to the matching troubleshooting case near the end.
 
 ---
 
